@@ -26,26 +26,11 @@ func queryExec(_ *cobra.Command, args []string) error {
 	}
 	data := res.Collect()
 
-	count := 0
-	for i, v := range data {
-		fmt.Printf("%d. %s\n", i+1, v.Name)
-		count++
-	}
-	if count == 0 {
+	if len(data) == 0 {
 		return errors.New("No songs found. Exiting.\n")
 	}
-	fmt.Printf("Select a song to fetch lyrics of: [1-%d] >> ", count)
 
-	var sel int
-
-	for sel < 1 || sel > count || err != nil {
-		_, err = fmt.Scanln(&sel)
-	}
-
-	fmt.Print("\033[H\033[2J")
-	fmt.Println("Fetching...")
-
-	song := data[sel-1]
+	song := data[0]
 
 	var lyrics string
 	var wg sync.WaitGroup
@@ -58,8 +43,6 @@ func queryExec(_ *cobra.Command, args []string) error {
 	}()
 
 	wg.Wait()
-
-	fmt.Print("\033[H\033[2J")
 	if err != nil {
 		return err
 	}
